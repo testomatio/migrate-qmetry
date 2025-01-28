@@ -79,15 +79,15 @@ function convertTestCases(inputFile, outputFile) {
           if (!currentTestCase.Steps.join(' ').includes('## Steps')) {
             currentTestCase.Steps.push('\n\n## Steps\n');
           }
-          currentTestCase.Steps.push(`* ${stepDescription.trim()}`);
+          currentTestCase.Steps.push(`* ${cleanHtml(stepDescription.trim())}`);
           if (stepExpectedOutcome) {
-              currentTestCase.Steps.push(`  *Expected:* ${stepExpectedOutcome.trim()}`);
+              currentTestCase.Steps.push(`  *Expected:* ${cleanHtml(stepExpectedOutcome.trim())}`);
           }
         }
 
         // Add preconditions if they exist
         if (stepDescription.includes('Preconditions:')) {
-            currentTestCase.Steps.push('\n## Precondition\n\n' + stepDescription
+            currentTestCase.Steps.push('\n## Precondition\n\n' + cleanHtml(stepDescription)
                 .split('Preconditions:')[1]
                 .trim());
         }
@@ -138,6 +138,15 @@ function mapPriority(priority) {
         'Trivial': 'low'
     };
     return priorityMap[priority] || 'normal';
+}
+
+function cleanHtml(text) {
+    if (!text) return '';
+    return text
+        .replace(/<br\s*\/?>/gi, '\n')  // Replace <br> with newline
+        .replace(/<\/?(p|span|div|ul|li)[^>]*>/gi, '') // Remove p, ul, li tags
+        .replace(/\n\s*\n/g, '\n')  // Remove multiple newlines
+        .trim();
 }
 
 try {
